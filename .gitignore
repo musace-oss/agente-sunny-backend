@@ -1,0 +1,10 @@
+# Nunca subir el archivo con tus claves reales
+.env
+
+# Archivos generados por Python
+__pycache__/
+*.pyc
+
+# Entorno virtual (si usas uno)
+venv/
+env/

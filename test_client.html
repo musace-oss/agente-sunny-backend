@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Prueba de agente ElevenLabs</title>
+</head>
+<body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+  <h1>Prueba del agente</h1>
+  <p>Backend: <code>http://localhost:3001</code></p>
+  <button id="startButton">Iniciar conversación</button>
+  <button id="stopButton" disabled>Detener conversación</button>
+  <p>Estado: <span id="status">Desconectado</span></p>
+
+  <script type="module">
+    import { Conversation } from "https://esm.sh/@elevenlabs/client";
+
+    const startButton = document.getElementById("startButton");
+    const stopButton = document.getElementById("stopButton");
+    const statusEl = document.getElementById("status");
+    let conversation;
+
+    async function getSignedUrl() {
+      const res = await fetch("http://localhost:3001/api/get-signed-url");
+      if (!res.ok) throw new Error("No se pudo obtener la signed URL");
+      const { signedUrl } = await res.json();
+      return signedUrl;
+    }
+
+    async function start() {
+      try {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+        const signedUrl = await getSignedUrl();
+
+        conversation = await Conversation.startSession({
+          signedUrl,
+          onConnect: () => {
+            statusEl.textContent = "Conectado";
+            startButton.disabled = true;
+            stopButton.disabled = false;
+          },
+          onDisconnect: () => {
+            statusEl.textContent = "Desconectado";
+            startButton.disabled = false;
+            stopButton.disabled = true;
+          },
+          onError: (error) => console.error("Error:", error),
+        });
+      } catch (error) {
+        console.error("No se pudo iniciar la conversación:", error);
+      }
+    }
+
+    async function stop() {
+      if (conversation) {
+        await conversation.endSession();
+        conversation = null;
+      }
+    }
+
+    startButton.addEventListener("click", start);
+    stopButton.addEventListener("click", stop);
+  </script>
+</body>
+</html>

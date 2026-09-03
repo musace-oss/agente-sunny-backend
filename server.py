@@ -79,6 +79,22 @@ def get_signed_url():
     data = response.json()
     return {"signedUrl": data["signed_url"]}
 
+@app.get("/api/calcular-ahorro")
+def calcular_ahorro(factura_mensual: float):
+    """
+    Recibe la factura mensual de luz (en euros) y devuelve un ahorro
+    estimado ficticio con paneles solares.
+    """
+    ahorro_mensual = round(factura_mensual * 0.85, 2)
+    ahorro_anual = round(ahorro_mensual * 12, 2)
+    paneles_recomendados = max(4, round(factura_mensual / 15))
+
+    return {
+        "factura_mensual": factura_mensual,
+        "ahorro_mensual_estimado": ahorro_mensual,
+        "ahorro_anual_estimado": ahorro_anual,
+        "paneles_recomendados": paneles_recomendados,
+    }
 
 @app.get("/api/health")
 def health():

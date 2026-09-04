@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sunny — Asistente de voz IA para energías renovables</title>
+<style>
+  :root {
+    --ink: #0f2b24;
+    --muted: #4b6960;
+    --bg: #f3faf6;
+    --card: #ffffff;
+    --accent: #0f7a4f;
+    --accent-dark: #0b5c3b;
+    --line: #dcece4;
+    --danger: #b3441f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(180deg, #eafaf3 0%, var(--bg) 320px, var(--bg) 100%);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+  }
+  .wrap { width: 100%; max-width: 560px; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #e3f5ec;
+    color: var(--accent-dark);
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 999px;
+    letter-spacing: 0.02em;
+  }
+  header { text-align: center; margin-bottom: 22px; }
+  .logo {
+    width: 64px; height: 64px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #ffd166, var(--accent));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px;
+    margin: 0 auto 14px;
+    box-shadow: 0 8px 20px rgba(15, 122, 79, 0.25);
+  }
+  h1 { font-size: 26px; margin: 4px 0 6px; letter-spacing: -0.01em; }
+  .subtitle { color: var(--muted); font-size: 15px; margin: 0; line-height: 1.5; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 28px 24px;
+    margin-top: 22px;
+    box-shadow: 0 12px 32px rgba(15, 43, 36, 0.06);
+  }
+
+  .about {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 0 0 20px;
+  }
+  .about b { color: var(--ink); }
+
+  .stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 8px 0 4px;
+  }
+
+  #talkBtn {
+    border: none;
+    cursor: pointer;
+    width: 92px; height: 92px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    font-size: 32px;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 10px 24px rgba(15, 122, 79, 0.3);
+  }
+  #talkBtn:hover { transform: translateY(-2px); }
+  #talkBtn:active { transform: translateY(0); }
+  #talkBtn.connecting {
+    background: #c98a1f;
+    animation: pulse 1.3s infinite;
+  }
+  #talkBtn.connected {
+    background: var(--danger);
+    box-shadow: 0 10px 24px rgba(179, 68, 31, 0.3);
+  }
+  #talkBtn:disabled { cursor: default; opacity: 0.85; }
+
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(201, 138, 31, 0.45); }
+    70% { box-shadow: 0 0 0 16px rgba(201, 138, 31, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(201, 138, 31, 0); }
+  }
+
+  #statusText {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--muted);
+    min-height: 20px;
+    text-align: center;
+  }
+  #statusText.live { color: var(--accent-dark); }
+  #statusText.err { color: var(--danger); }
+
+  .hint {
+    font-size: 12.5px;
+    color: #8a9d95;
+    text-align: center;
+    margin: 2px 0 0;
+  }
+
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+  }
+  .chip {
+    font-size: 12px;
+    color: var(--accent-dark);
+    background: #eafaf3;
+    border: 1px solid var(--line);
+    padding: 5px 10px;
+    border-radius: 999px;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 22px;
+    font-size: 12px;
+    color: #9fb0a9;
+    line-height: 1.6;
+  }
+  footer a { color: var(--accent-dark); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <span class="badge">● Proyecto de práctica</span>
+      <div class="logo">☀️</div>
+      <h1>Sunny</h1>
+      <p class="subtitle">Asistente de voz con IA para energías renovables</p>
+    </header>
+
+    <div class="card">
+      <p class="about">
+        Sunny es un agente conversacional construido con
+        <b>ElevenLabs Conversational AI</b>, con un backend propio en
+        <b>Python (FastAPI)</b> desplegado en <b>Render</b>, y una herramienta
+        personalizada (webhook) que calcula un ahorro estimado con paneles
+        solares a partir de la factura de luz del usuario. Pulsa el botón y
+        pregúntale, por ejemplo: <i>&ldquo;Pago 80 euros de luz al mes,
+        &iquest;cu&aacute;nto podr&iacute;a ahorrar?&rdquo;</i>
+      </p>
+
+      <div class="stage">
+        <button id="talkBtn" aria-label="Hablar con Sunny">🎙️</button>
+        <div id="statusText">Pulsa el bot&oacute;n para empezar a hablar con Sunny</div>
+        <p class="hint">Necesitas permitir el acceso al micr&oacute;fono. La primera conexi&oacute;n puede tardar unos segundos si el servidor estaba inactivo.</p>
+      </div>
+
+      <div class="stack">
+        <span class="chip">ElevenLabs Conversational AI</span>
+        <span class="chip">Python · FastAPI</span>
+        <span class="chip">Webhook Tools</span>
+        <span class="chip">Render</span>
+        <span class="chip">Git · GitHub</span>
+      </div>
+    </div>
+
+    <footer>
+      Proyecto personal de pr&aacute;ctica. &ldquo;Aurora Renovables&rdquo; es una empresa
+      ficticia usada solo para la base de conocimientos del agente &mdash; no representa
+      productos ni ofertas reales.
+    </footer>
+  </div>
+
+  <script type="module">
+    import { Conversation } from "https://esm.sh/@elevenlabs/client";
+
+    const BACKEND_URL = "https://agente-sunny-backend.onrender.com";
+
+    const btn = document.getElementById("talkBtn");
+    const statusText = document.getElementById("statusText");
+
+    let conversation = null;
+    let isBusy = false;
+
+    function setStatus(text, cls) {
+      statusText.textContent = text;
+      statusText.className = cls || "";
+    }
+
+    function setButtonState(state) {
+      btn.classList.remove("connecting", "connected");
+      if (state === "connecting") {
+        btn.classList.add("connecting");
+        btn.textContent = "⏳";
+      } else if (state === "connected") {
+        btn.classList.add("connected");
+        btn.textContent = "⏹️";
+      } else {
+        btn.textContent = "🎙️";
+      }
+    }
+
+    async function startConversation() {
+      isBusy = true;
+      btn.disabled = true;
+      setButtonState("connecting");
+      setStatus("Conectando con Sunny…");
+
+      try {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+
+        const res = await fetch(`${BACKEND_URL}/api/get-signed-url`);
+        if (!res.ok) throw new Error("No se pudo obtener la signed URL del backend.");
+        const { signedUrl } = await res.json();
+
+        conversation = await Conversation.startSession({
+          signedUrl,
+          onConnect: () => {
+            setButtonState("connected");
+            setStatus("🟢 Conectado — habla cuando quieras", "live");
+            btn.disabled = false;
+          },
+          onDisconnect: () => {
+            setButtonState("idle");
+            setStatus("Conversación finalizada. Pulsa el botón para volver a hablar.");
+            btn.disabled = false;
+            conversation = null;
+          },
+          onError: (err) => {
+            console.error(err);
+            setButtonState("idle");
+            setStatus("Ocurrió un error en la conversación. Inténtalo de nuevo.", "err");
+            btn.disabled = false;
+            conversation = null;
+          },
+        });
+      } catch (err) {
+        console.error(err);
+        setButtonState("idle");
+        if (err && err.name === "NotAllowedError") {
+          setStatus("Necesitas permitir el acceso al micrófono para hablar con Sunny.", "err");
+        } else {
+          setStatus("No se pudo conectar con el backend. Puede estar despertando (plan gratuito) — espera unos segundos y vuelve a intentarlo.", "err");
+        }
+        btn.disabled = false;
+      } finally {
+        isBusy = false;
+      }
+    }
+
+    async function stopConversation() {
+      if (!conversation) return;
+      btn.disabled = true;
+      setStatus("Finalizando conversación…");
+      try {
+        await conversation.endSession();
+      } catch (err) {
+        console.error(err);
+      }
+      conversation = null;
+      setButtonState("idle");
+      setStatus("Pulsa el botón para empezar a hablar con Sunny");
+      btn.disabled = false;
+    }
+
+    btn.addEventListener("click", () => {
+      if (isBusy) return;
+      if (conversation) {
+        stopConversation();
+      } else {
+        startConversation();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sam — AI voice mentor for Customer Success</title>
+<style>
+  :root {
+    --ink: #1a1f3d;
+    --muted: #545b80;
+    --bg: #f4f5fc;
+    --card: #ffffff;
+    --accent: #3b4cca;
+    --accent-dark: #2a3799;
+    --line: #dfe2f3;
+    --danger: #b3441f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(180deg, #e8eafb 0%, var(--bg) 320px, var(--bg) 100%);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+  }
+  .wrap { width: 100%; max-width: 560px; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #e6e8fa;
+    color: var(--accent-dark);
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 999px;
+    letter-spacing: 0.02em;
+  }
+  header { text-align: center; margin-bottom: 22px; }
+  .logo {
+    width: 64px; height: 64px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #7fd3ff, var(--accent));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px;
+    margin: 0 auto 14px;
+    box-shadow: 0 8px 20px rgba(59, 76, 202, 0.25);
+  }
+  h1 { font-size: 26px; margin: 4px 0 6px; letter-spacing: -0.01em; }
+  .subtitle { color: var(--muted); font-size: 15px; margin: 0; line-height: 1.5; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 28px 24px;
+    margin-top: 22px;
+    box-shadow: 0 12px 32px rgba(26, 31, 61, 0.06);
+  }
+
+  .about {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 0 0 20px;
+  }
+  .about b { color: var(--ink); }
+
+  .stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 8px 0 4px;
+  }
+
+  #talkBtn {
+    border: none;
+    cursor: pointer;
+    width: 92px; height: 92px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    font-size: 32px;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 10px 24px rgba(59, 76, 202, 0.3);
+  }
+  #talkBtn:hover { transform: translateY(-2px); }
+  #talkBtn:active { transform: translateY(0); }
+  #talkBtn.connecting {
+    background: #c98a1f;
+    animation: pulse 1.3s infinite;
+  }
+  #talkBtn.connected {
+    background: var(--danger);
+    box-shadow: 0 10px 24px rgba(179, 68, 31, 0.3);
+  }
+  #talkBtn:disabled { cursor: default; opacity: 0.85; }
+
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(201, 138, 31, 0.45); }
+    70% { box-shadow: 0 0 0 16px rgba(201, 138, 31, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(201, 138, 31, 0); }
+  }
+
+  #statusText {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--muted);
+    min-height: 20px;
+    text-align: center;
+  }
+  #statusText.live { color: var(--accent-dark); }
+  #statusText.err { color: var(--danger); }
+
+  .hint {
+    font-size: 12.5px;
+    color: #8c92b3;
+    text-align: center;
+    margin: 2px 0 0;
+  }
+
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+  }
+  .chip {
+    font-size: 12px;
+    color: var(--accent-dark);
+    background: #eef0fc;
+    border: 1px solid var(--line);
+    padding: 5px 10px;
+    border-radius: 999px;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 22px;
+    font-size: 12px;
+    color: #a2a7c4;
+    line-height: 1.6;
+  }
+  footer a { color: var(--accent-dark); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <span class="badge">● Practice project</span>
+      <div class="logo">🤝</div>
+      <h1>Sam</h1>
+      <p class="subtitle">Your AI voice mentor for Customer Success</p>
+    </header>
+
+    <div class="card">
+      <p class="about">
+        Sam is a conversational agent built with
+        <b>ElevenLabs Conversational AI</b>. It explains the key concepts of
+        <b>Customer Success</b>, gives practical advice to junior CSMs and helps
+        candidates prepare for interviews for any Customer Success position, from
+        CSM or Onboarding Specialist to Customer Success Lead or Head of CS. It answers using its own
+        <b>knowledge base</b> and speaks <b>English and Spanish</b>.
+        Press the button and ask, for example:
+        <i>&ldquo;What is churn?&rdquo;</i> or
+        <i>&ldquo;Can you run a mock interview for a Customer Success Manager role?&rdquo;</i>
+      </p>
+
+      <div class="stage">
+        <button id="talkBtn" aria-label="Talk to Sam">🎙️</button>
+        <div id="statusText">Press the button to start talking to Sam</div>
+        <p class="hint">You need to allow microphone access. The first connection may take a few seconds if the server was idle.</p>
+      </div>
+
+      <div class="stack">
+        <span class="chip">ElevenLabs Conversational AI</span>
+        <span class="chip">Knowledge base · RAG</span>
+        <span class="chip">English · Español</span>
+        <span class="chip">Python · FastAPI</span>
+        <span class="chip">Render</span>
+        <span class="chip">Git · GitHub</span>
+      </div>
+    </div>
+
+    <footer>
+      Personal practice project. Sam offers general guidance on
+      Customer Success and is not a substitute for professional advice.<br />
+      <a href="../">Meet Sunny too, the renewable energy assistant &rarr;</a>
+    </footer>
+  </div>
+
+  <script type="module">
+    import { Conversation } from "https://esm.sh/@elevenlabs/client";
+
+    const BACKEND_URL = "https://agente-sunny-backend.onrender.com";
+
+    const btn = document.getElementById("talkBtn");
+    const statusText = document.getElementById("statusText");
+
+    let conversation = null;
+    let isBusy = false;
+
+    function setStatus(text, cls) {
+      statusText.textContent = text;
+      statusText.className = cls || "";
+    }
+
+    function setButtonState(state) {
+      btn.classList.remove("connecting", "connected");
+      if (state === "connecting") {
+        btn.classList.add("connecting");
+        btn.textContent = "⏳";
+      } else if (state === "connected") {
+        btn.classList.add("connected");
+        btn.textContent = "⏹️";
+      } else {
+        btn.textContent = "🎙️";
+      }
+    }
+
+    async function startConversation() {
+      isBusy = true;
+      btn.disabled = true;
+      setButtonState("connecting");
+      setStatus("Connecting to Sam…");
+
+      try {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+
+        const res = await fetch(`${BACKEND_URL}/api/sam/get-signed-url`);
+        if (!res.ok) throw new Error("Could not get the signed URL from the backend.");
+        const { signedUrl } = await res.json();
+
+        conversation = await Conversation.startSession({
+          signedUrl,
+          onConnect: () => {
+            setButtonState("connected");
+            setStatus("🟢 Connected — speak whenever you like", "live");
+            btn.disabled = false;
+          },
+          onDisconnect: () => {
+            setButtonState("idle");
+            setStatus("Conversation ended. Press the button to talk again.");
+            btn.disabled = false;
+            conversation = null;
+          },
+          onError: (err) => {
+            console.error(err);
+            setButtonState("idle");
+            setStatus("Something went wrong in the conversation. Please try again.", "err");
+            btn.disabled = false;
+            conversation = null;
+          },
+        });
+      } catch (err) {
+        console.error(err);
+        setButtonState("idle");
+        if (err && err.name === "NotAllowedError") {
+          setStatus("You need to allow microphone access to talk to Sam.", "err");
+        } else {
+          setStatus("Could not connect to the backend. It may be waking up (free plan) — wait a few seconds and try again.", "err");
+        }
+        btn.disabled = false;
+      } finally {
+        isBusy = false;
+      }
+    }
+
+    async function stopConversation() {
+      if (!conversation) return;
+      btn.disabled = true;
+      setStatus("Ending conversation…");
+      try {
+        await conversation.endSession();
+      } catch (err) {
+        console.error(err);
+      }
+      conversation = null;
+      setButtonState("idle");
+      setStatus("Press the button to start talking to Sam");
+      btn.disabled = false;
+    }
+
+    btn.addEventListener("click", () => {
+      if (isBusy) return;
+      if (conversation) {
+        stopConversation();
+      } else {
+        startConversation();
+      }
+    });
+  </script>
+</body>
+</html>
